@@ -59,7 +59,7 @@ func main() {
             firecrackerCPUCountAnnotation: "2",
         }),
     }
-    container, err := client.NewContainer(ctx, containerID,
+    container, err := client.NewContainer(ctx, containerID+"-"+time.Now().Format("20060102150405"),
         containerd.WithSnapshotter(snapshotter),
         containerd.WithNewSnapshot(containerID+"-snap"+time.Now().Format("20060102150405"), image),
         containerd.WithNewSpec(specOpts...),
