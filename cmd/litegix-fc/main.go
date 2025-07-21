@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"time"
 	"syscall"
+	"time"
 
 	"github.com/containerd/containerd"
 	"github.com/containerd/containerd/cio"
@@ -14,12 +14,17 @@ import (
 
 	fcoci "github.com/firecracker-microvm/firecracker-containerd/runtime/firecrackeroci"
 )
+
 const (
-	socketPath  = "/run/firecracker-containerd/containerd.sock"
-	snapshotter = "devmapper"
-	imageRef    = "docker.io/library/busybox:latest"
-	vmId        = "demo-vm"
-	containerID = "demo-container"
+	socketPath                       = "/run/firecracker-containerd/containerd.sock"
+	snapshotter                      = "devmapper"
+	imageRef                         = "docker.io/library/busybox:latest"
+	vmId                             = "demo-vm"
+	containerID                      = "demo-container"
+	firecrackerVMIDAnnotation        = "firecracker.vm.id"
+	firecrackerMemoryAnnotation      = "firecracker.vm.memory"
+	firecrackerCPUCountAnnotation    = "firecracker.vm.cpu_count"
+	firecrackerSnapshotterAnnotation = "firecracker.vm.snapshotter"
 )
 
 func main() {
@@ -31,7 +36,7 @@ func main() {
 	defer client.Close()
 
 	ctx := namespaces.WithNamespace(context.Background(), "demoNS")
-	
+
 	fmt.Println("Pulling image …")
 	image, err := client.Pull(ctx, imageRef,
 		containerd.WithPullUnpack,
@@ -41,17 +46,22 @@ func main() {
 		log.Fatalf("pull: %v", err)
 	}
 	fmt.Println("Image ready:", image.Name())
-	
+
 	specOpts := []oci.SpecOpts{
 		oci.WithImageConfig(image),
 		oci.WithProcessArgs("/bin/sh", "-c", "echo hello-vm"),
-		fcoci.WithVMID(vmId),                 
+		fcoci.WithVMID(vmId),
+		oci.WithAnnotations(map[string]string{
+			firecrackerVMIDAnnotation:     vmId,
+			firecrackerMemoryAnnotation:   "1024",
+			firecrackerCPUCountAnnotation: "1",
+		}),
 	}
 	container, err := client.NewContainer(ctx, containerID,
 		containerd.WithSnapshotter(snapshotter),
 		containerd.WithNewSnapshot(containerID+"-snap", image),
 		containerd.WithNewSpec(specOpts...),
-		containerd.WithRuntime("aws.firecracker", nil), 
+		containerd.WithRuntime("aws.firecracker", nil),
 	)
 	if err != nil {
 		log.Fatalf("new container: %v", err)
@@ -83,8 +93,5 @@ func main() {
 	}
 
 	fmt.Println("VM running")
-	
-
-	
 
 }
