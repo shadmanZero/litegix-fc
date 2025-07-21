@@ -55,7 +55,7 @@ func main() {
         oci.WithAnnotations(map[string]string{
             firecrackerVMIDAnnotation:     vmId,
             firecrackerMemoryAnnotation:   "1024",
-            firecrackerCPUCountAnnotation: "1",
+            firecrackerCPUCountAnnotation: "2",
         }),
     }
     container, err := client.NewContainer(ctx, containerID,
