@@ -54,16 +54,26 @@ func main() {
         fcoci.WithVMID(vmId),
 		
         oci.WithAnnotations(map[string]string{
-            firecrackerVMIDAnnotation:     vmId,
-            firecrackerMemoryAnnotation:   "1024",
-            firecrackerCPUCountAnnotation: "2",
+            firecrackerVMIDAnnotation:        vmId,
+            firecrackerMemoryAnnotation:      "1024",
+            firecrackerCPUCountAnnotation:    "2",
+            firecrackerSnapshotterAnnotation: snapshotter,
         }),
     }
+    
+    // Configure VM metadata for Firecracker runtime
+    runtimeOptions := map[string]interface{}{
+        "vm_size": map[string]interface{}{
+            "cpu_count": 2,
+            "mem_size":  1024,
+        },
+    }
+    
     container, err := client.NewContainer(ctx, containerID+"-"+time.Now().Format("20060102150405"),
         containerd.WithSnapshotter(snapshotter),
         containerd.WithNewSnapshot(containerID+"-snap"+time.Now().Format("20060102150405"), image),
         containerd.WithNewSpec(specOpts...),
-        containerd.WithRuntime("aws.firecracker", nil),
+        containerd.WithRuntime("aws.firecracker", runtimeOptions),
     )
     if err != nil {
         log.Fatalf("new container: %v", err)
