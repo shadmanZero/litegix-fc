@@ -20,7 +20,7 @@ const (
 	snapshotter                      = "devmapper"
 	imageRef                         = "docker.io/library/busybox:latest"
 	vmId                             = "demo-vm"
-	containerID                      = "demo-container"
+	containerID                      = "demo-container-1"
 	firecrackerVMIDAnnotation        = "firecracker.vm.id"
 	firecrackerMemoryAnnotation      = "firecracker.vm.memory"
 	firecrackerCPUCountAnnotation    = "firecracker.vm.cpu_count"
@@ -52,7 +52,7 @@ func main() {
         oci.WithProcessArgs("/bin/sh", "-c", "echo '--- CPU Count ---'; nproc; echo; echo '--- Memory (MiB) ---'; free -m"),
         // highlight-end
         fcoci.WithVMID(vmId),
-		//oci.WithCPUs("2"),
+		
 		oci.WithMemoryLimit(1024),
         oci.WithAnnotations(map[string]string{
             firecrackerVMIDAnnotation:     vmId,
