@@ -53,7 +53,6 @@ func main() {
         // highlight-end
         fcoci.WithVMID(vmId),
 		
-		oci.WithMemoryLimit(1024),
         oci.WithAnnotations(map[string]string{
             firecrackerVMIDAnnotation:     vmId,
             firecrackerMemoryAnnotation:   "1024",
