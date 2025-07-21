@@ -52,7 +52,7 @@ func main() {
         oci.WithProcessArgs("/bin/sh", "-c", "echo '--- CPU Count ---'; nproc; echo; echo '--- Memory (MiB) ---'; free -m"),
         // highlight-end
         fcoci.WithVMID(vmId),
-		oci.WithCPUs("2"),
+		//oci.WithCPUs("2"),
 		oci.WithMemoryLimit(1024),
         oci.WithAnnotations(map[string]string{
             firecrackerVMIDAnnotation:     vmId,
