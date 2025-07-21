@@ -20,7 +20,7 @@ const (
 	snapshotter                      = "devmapper"
 	imageRef                         = "docker.io/library/busybox:latest"
 	vmId                             = "demo-vm"
-	containerID                      = "demo-container-1"
+	containerID                      = "demo-container-new"
 	firecrackerVMIDAnnotation        = "firecracker.vm.id"
 	firecrackerMemoryAnnotation      = "firecracker.vm.memory"
 	firecrackerCPUCountAnnotation    = "firecracker.vm.cpu_count"
@@ -97,5 +97,8 @@ func main() {
     // The message "VM running" is printed after the VM has already exited in this script.
     // It's kept here to match the original code's structure.
     fmt.Println("VM finished execution")
+	// kill the container
+	container.Delete(ctx, containerd.WithSnapshotCleanup)
+
 
 }
